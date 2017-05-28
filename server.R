@@ -1,24 +1,21 @@
-library(shiny)
-library(ggplot2)
- 
 shinyServer(function(input, output) {
- 
-  output$plot <- reactivePlot(function() {
- 
-    p <- ggplot(dataset, aes_string(x=input$x, y=input$y)) + geom_point()
- 
-    if (input$color != 'None')
-      p <- p + 
-        aes_string(color=input$color) + 
-        theme(legend.position="top")
- 
-    if (input$smooth)
-      p <- p + 
-        geom_smooth() + 
-        theme(legend.position="top")
- 
-    print(p)
- 
-  }, height=400)
- 
+  
+  output$main_plot <- reactivePlot(width = 400, height = 300, function() {
+    
+    hist(faithful$eruptions,
+         probability = TRUE,
+         breaks = as.numeric(input$n_breaks),
+         xlab = "Duration (minutes)",
+         main = "display")
+    
+    if (input$individual_obs) {
+      rug(faithful$eruptions)
+    }
+    
+    if (input$density) {
+      dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+      lines(dens, col = "blue")
+    }
+    
+  })
 })
